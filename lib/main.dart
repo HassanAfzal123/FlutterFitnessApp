@@ -3,13 +3,15 @@ import 'dart:async';
 import 'package:flutter/src/widgets/framework.dart';
 import 'dart:async';
 
+import 'LoginPage.dart';
+
 
 void main() async {
   runApp(
       new MaterialApp(
           home: new SplashScreen(),
           routes: <String, WidgetBuilder>{
-              //Define routes here
+            "/loginPage": (BuildContext context) => new Login(),
           }
       )
   );
@@ -20,12 +22,30 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
+
+final logo_img = new CircleAvatar(
+  radius: 50.0,
+  backgroundColor: Colors.black,
+  child:  Container(
+    decoration: BoxDecoration(color: Colors.black87,
+      image: new DecorationImage(image:
+      new AssetImage(
+          "assets/logo.png"
+      ),
+          fit: BoxFit.fill
+      ),
+    ),
+  ),
+);
+
+
+
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-   // Timer(Duration(seconds: 5), () =>  Navigator.pushReplacementNamed(context, '/loginPage'));
+   Timer(Duration(seconds: 5), () =>  Navigator.pushReplacementNamed(context, '/loginPage'));
   }
 
   @override
@@ -35,12 +55,12 @@ class _SplashScreenState extends State<SplashScreen> {
         fit: StackFit.expand,
         children: <Widget>[
           Container(
-            decoration: BoxDecoration(color: Colors.black87,
+            decoration: BoxDecoration(color: Colors.black,
               image: new DecorationImage(image:
                 new AssetImage(
-                  "assets/splashscreen.jpg"
+                  "assets/logo.png"
                 ),
-                fit: BoxFit.fill
+                fit: BoxFit.fitWidth
               ),
             ),
           ),
@@ -48,7 +68,7 @@ class _SplashScreenState extends State<SplashScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Expanded(
-                flex: 4,
+                flex: 3,
                 child: Container(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -62,19 +82,18 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
               Expanded(
-                flex: 3,
+                flex: 2,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[                    Text(
                     "",
                     style: TextStyle(
                         fontFamily: 'Courier New',
-                        fontStyle: FontStyle.normal,
-                        color: Colors.red,
+                        fontStyle: FontStyle.italic,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 40.0),
                   ),
-                    SizedBox(height: 100,),
                     RefreshProgressIndicator(backgroundColor: Colors.white,),
                     Padding(
                       padding: EdgeInsets.only(top: 20.0),
