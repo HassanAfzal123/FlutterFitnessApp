@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'dart:async';
 
 import 'LoginPage.dart';
+import 'HomeScreen.dart';
 
 
 void main() async {
@@ -12,6 +13,7 @@ void main() async {
           home: new SplashScreen(),
           routes: <String, WidgetBuilder>{
             "/loginPage": (BuildContext context) => new Login(),
+            "/userHome": (BuildContext context) => new userHomeScreen(),
           }
       )
   );
@@ -45,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-   Timer(Duration(seconds: 5), () =>  Navigator.pushReplacementNamed(context, '/loginPage'));
+   Timer(Duration(seconds: 5), () =>  Navigator.pushReplacementNamed(context, '/userHome'));
   }
 
   @override

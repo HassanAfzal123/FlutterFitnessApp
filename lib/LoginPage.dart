@@ -133,12 +133,23 @@ class _LoginPageState extends State<Login> {
       );
 
       return new Scaffold(
-            body:
+          appBar: AppBar(
+            title: Center(
+            child: Text('The Aesthetic Club'
+            ,style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Courier New',
+                fontWeight: FontWeight.w900
+              ),
+            ),),
+            backgroundColor: Colors.black,
+            elevation: 3.0,
+          )
+          ,body:
         new Stack(
           children: <Widget>[Container(
             decoration: new BoxDecoration(
               color: Colors.black87,
-              image: new DecorationImage(image: AssetImage('assets/splashscreen.jpg'),fit: BoxFit.fill)
             ),
     ),
     new Center(
