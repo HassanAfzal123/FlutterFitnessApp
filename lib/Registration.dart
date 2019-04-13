@@ -47,13 +47,14 @@ class _RegistrationPageState extends State<Registration> {
           Navigator.of(context).pushNamed("/loginPage");
         });
       } else {
-        showDialog(
-            context: context,
-            child: new AlertDialog(
-              title: new Text("Register"),
-              content: new Text(serverResponse.message),
-            ));
+        // Any condition
       }
+      showDialog(
+          context: context,
+          child: new AlertDialog(
+            title: new Text("Register"),
+            content: new Text(serverResponse.message),
+          ));
     });
   }
 

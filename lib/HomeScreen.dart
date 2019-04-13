@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:fitness_app_flutter/LoginPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
@@ -6,6 +7,8 @@ import 'dart:convert';
 
 class userHomeScreen extends StatefulWidget {
   @override
+  final Post serverResponse;                // Includes the status,uid,accessToken
+  userHomeScreen({Key key, @required this.serverResponse}) : super(key: key);
   State<StatefulWidget> createState() {
     // TODO: implement createState
     return _UserHomeScreenState();
@@ -14,8 +17,8 @@ class userHomeScreen extends StatefulWidget {
 
 class _UserHomeScreenState extends State<userHomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-
   @override
+
   Widget build(BuildContext context) {
     final logo_img = new CircleAvatar(
       radius: 80.0,
@@ -60,7 +63,7 @@ class _UserHomeScreenState extends State<userHomeScreen> {
             ListTile(
               title: Center(
                 child: Text(
-                  'Item 1',
+                  'item1',
                   style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.w600,
@@ -69,8 +72,7 @@ class _UserHomeScreenState extends State<userHomeScreen> {
                 ),
               ),
               onTap: () {
-                // Update the state of the app
-                // ...
+
               },
             )
           ],

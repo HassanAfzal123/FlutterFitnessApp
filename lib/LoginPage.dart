@@ -1,3 +1,4 @@
+import 'package:fitness_app_flutter/HomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
@@ -5,11 +6,12 @@ import 'dart:convert';
 
 class Post {
   final int status;
-  final String message;
-  Post({this.status, this.message});
+  final String uid;
+  final String token;
+  Post({this.status, this.uid, this.token});
 
   factory Post.fromJson(Map<String, dynamic> json) {
-    return Post(status: json['status'], message: json['message']);
+    return Post(status: json['status'], uid: json['message']['uid'],token: json['message']['token']);
   }
 }
 
@@ -40,16 +42,19 @@ class _LoginPageState extends State<Login> {
             body: data)
         .then((response) {
       Post serverResponse = Post.fromJson(json.decode(response.body));
+      print(serverResponse.token);
       if (serverResponse.status == 200) {
         setState(() {
-          Navigator.of(context).pushNamed("/userHome");
+          Navigator.push(context, new MaterialPageRoute(
+            builder: (BuildContext context) => userHomeScreen(serverResponse: serverResponse)
+          ));
         });
       } else {
         showDialog(
             context: context,
             child: new AlertDialog(
               title: new Text("Login"),
-              content: new Text(serverResponse.message),
+              content: new Text(serverResponse.uid),
             ));
       }
     });
