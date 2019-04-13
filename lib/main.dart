@@ -5,18 +5,15 @@ import 'dart:async';
 
 import 'LoginPage.dart';
 import 'HomeScreen.dart';
-
+import 'Registration.dart';
 
 void main() async {
   runApp(
-      new MaterialApp(
-          home: new SplashScreen(),
-          routes: <String, WidgetBuilder>{
-            "/loginPage": (BuildContext context) => new Login(),
-            "/userHome": (BuildContext context) => new userHomeScreen(),
-          }
-      )
-  );
+      new MaterialApp(home: new SplashScreen(), routes: <String, WidgetBuilder>{
+    "/loginPage": (BuildContext context) => new Login(),
+    "/userHome": (BuildContext context) => new userHomeScreen(),
+    "/registration": (BuildContext context) => new Registration()
+  }));
 }
 
 class SplashScreen extends StatefulWidget {
@@ -24,30 +21,25 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-
 final logo_img = new CircleAvatar(
   radius: 50.0,
   backgroundColor: Colors.black,
-  child:  Container(
-    decoration: BoxDecoration(color: Colors.black87,
-      image: new DecorationImage(image:
-      new AssetImage(
-          "assets/logo.png"
-      ),
-          fit: BoxFit.fill
-      ),
+  child: Container(
+    decoration: BoxDecoration(
+      color: Colors.black87,
+      image: new DecorationImage(
+          image: new AssetImage("assets/logo.png"), fit: BoxFit.fill),
     ),
   ),
 );
-
-
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-   Timer(Duration(seconds: 5), () =>  Navigator.pushReplacementNamed(context, '/userHome'));
+    Timer(Duration(seconds: 5),
+        () => Navigator.pushReplacementNamed(context, '/loginPage'));
   }
 
   @override
@@ -57,13 +49,11 @@ class _SplashScreenState extends State<SplashScreen> {
         fit: StackFit.expand,
         children: <Widget>[
           Container(
-            decoration: BoxDecoration(color: Colors.black,
-              image: new DecorationImage(image:
-                new AssetImage(
-                  "assets/logo.png"
-                ),
-                fit: BoxFit.fitWidth
-              ),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              image: new DecorationImage(
+                  image: new AssetImage("assets/logo.png"),
+                  fit: BoxFit.fitWidth),
             ),
           ),
           Column(
@@ -87,20 +77,22 @@ class _SplashScreenState extends State<SplashScreen> {
                 flex: 2,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[                    Text(
-                    "",
-                    style: TextStyle(
-                        fontFamily: 'Courier New',
-                        fontStyle: FontStyle.italic,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 40.0),
-                  ),
-                    RefreshProgressIndicator(backgroundColor: Colors.white,),
+                  children: <Widget>[
+                    Text(
+                      "",
+                      style: TextStyle(
+                          fontFamily: 'Courier New',
+                          fontStyle: FontStyle.italic,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 40.0),
+                    ),
+                    RefreshProgressIndicator(
+                      backgroundColor: Colors.white,
+                    ),
                     Padding(
                       padding: EdgeInsets.only(top: 20.0),
                     ),
-
                   ],
                 ),
               )

@@ -3,6 +3,15 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+
+class Registration extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _RegistrationPageState();
+  }
+}
+
 class Post {
   final int status;
   final String message;
@@ -13,15 +22,7 @@ class Post {
   }
 }
 
-class Login extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return _LoginPageState();
-  }
-}
-
-class _LoginPageState extends State<Login> {
+class _RegistrationPageState extends State<Registration> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   final _emailController = new TextEditingController();
   final _passwordController = new TextEditingController();
@@ -32,7 +33,7 @@ class _LoginPageState extends State<Login> {
     Map data = {"emailId": email, "password": password};
     await http
         .post(
-            "https://us-central1-firestoredemo-bd9a8.cloudfunctions.net/login",
+            "https://us-central1-firestoredemo-bd9a8.cloudfunctions.net/registerUserWithEmailAndPassword",
             headers: {
               'Content-type': 'application/x-www-form-urlencoded',
               'Accept': 'application/json'
@@ -40,15 +41,16 @@ class _LoginPageState extends State<Login> {
             body: data)
         .then((response) {
       Post serverResponse = Post.fromJson(json.decode(response.body));
+      print(serverResponse);
       if (serverResponse.status == 200) {
         setState(() {
-          Navigator.of(context).pushNamed("/userHome");
+          Navigator.of(context).pushNamed("/loginPage");
         });
       } else {
         showDialog(
             context: context,
             child: new AlertDialog(
-              title: new Text("Login"),
+              title: new Text("Register"),
               content: new Text(serverResponse.message),
             ));
       }
@@ -105,7 +107,7 @@ class _LoginPageState extends State<Login> {
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20.0))),
         ));
-    final loginButton = Padding(
+    final registerButton = Padding(
       padding: EdgeInsets.symmetric(vertical: 16),
       child: Material(
           borderRadius: BorderRadius.circular(20.0),
@@ -115,17 +117,17 @@ class _LoginPageState extends State<Login> {
           child: MaterialButton(
             onPressed: sendData,
             child: Text(
-              "Login",
+              "Register",
               style: TextStyle(color: Colors.black),
             ),
           )),
     );
-    final registrationText = MaterialButton(
+    final loginText = MaterialButton(
       onPressed: () {
-        Navigator.of(context).pushNamed("/registration");
+        Navigator.of(context).pushNamed("/loginPage");
       },
-      child: Text("New User? Register Here",
-          style: new TextStyle(color: Colors.white)),
+      child: Text("Already Have an Account. Go back to Login.",
+          style: new TextStyle( color: Colors.white)),
     );
 
     return new Scaffold(
@@ -167,11 +169,11 @@ class _LoginPageState extends State<Login> {
                       SizedBox(
                         height: 30,
                       ),
-                      loginButton,
+                      registerButton,
                       SizedBox(
                         height: 30,
                       ),
-                      registrationText
+                      loginText
                     ],
                   )))
         ]));
