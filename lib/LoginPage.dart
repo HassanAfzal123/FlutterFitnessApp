@@ -1,8 +1,12 @@
+import 'dart:ui';
+
 import 'package:fitness_app_flutter/HomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter/services.dart' show SystemChannels;
+
 
 class Post {
   final int status;
@@ -16,6 +20,7 @@ class Post {
 }
 
 class Login extends StatefulWidget {
+  bool loading = false;
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -29,6 +34,10 @@ class _LoginPageState extends State<Login> {
   final _passwordController = new TextEditingController();
 
   void sendData() async {
+    setState(() {
+      widget.loading = true;
+
+    });
     String email = _emailController.text;
     String password = _passwordController.text;
     Map data = {"emailId": email, "password": password};
@@ -41,6 +50,9 @@ class _LoginPageState extends State<Login> {
             },
             body: data)
         .then((response) {
+          setState(() {
+            widget.loading = false;
+          });
       Post serverResponse = Post.fromJson(json.decode(response.body));
       print(serverResponse.token);
       if (serverResponse.status == 200) {
@@ -75,7 +87,9 @@ class _LoginPageState extends State<Login> {
       ),
     );
 
-    final email = new Theme(
+    final email = Opacity(
+      opacity: widget.loading==true ? 0.2 : 1,
+    child:new Theme(
         data: new ThemeData(
           primaryColor: Colors.blue,
           primaryColorDark: Colors.white,
@@ -91,7 +105,7 @@ class _LoginPageState extends State<Login> {
               contentPadding: EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 20.0),
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20.0))),
-        ));
+        )));
 
     final password = new Theme(
         data: new ThemeData(
@@ -99,7 +113,9 @@ class _LoginPageState extends State<Login> {
           primaryColorDark: Colors.white,
           hintColor: Colors.white,
         ),
-        child: TextFormField(
+        child: Opacity(
+            opacity: widget.loading==true ? 0.2 : 1,
+            child: TextFormField(
           style: new TextStyle(color: Colors.white),
           controller: _passwordController,
           autofocus: false,
@@ -109,8 +125,10 @@ class _LoginPageState extends State<Login> {
               contentPadding: EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 20.0),
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20.0))),
-        ));
-    final loginButton = Padding(
+        )));
+    final loginButton = Opacity(
+        opacity: widget.loading==true ? 0.2 : 1,
+        child: Padding(
       padding: EdgeInsets.symmetric(vertical: 16),
       child: Material(
           borderRadius: BorderRadius.circular(20.0),
@@ -118,13 +136,16 @@ class _LoginPageState extends State<Login> {
           elevation: 5.0,
           color: Colors.cyan,
           child: MaterialButton(
-            onPressed: sendData,
+            onPressed: ()
+            {
+              sendData();
+            },
             child: Text(
               "Login",
               style: TextStyle(color: Colors.black),
             ),
           )),
-    );
+    ));
     final registrationText = MaterialButton(
       onPressed: () {
         Navigator.of(context).pushNamed("/registration");
@@ -154,9 +175,12 @@ class _LoginPageState extends State<Login> {
             ),
           ),
           new Center(
-              child: new Form(
+              child: AbsorbPointer(
+                  absorbing: widget.loading,
+                  child: new Form(
                   key: _formKey,
-                  child: ListView(
+                  child:new Container(
+                          child:ListView(
                     padding: EdgeInsets.fromLTRB(30, 5, 30, 5),
                     shrinkWrap: true,
                     children: <Widget>[
@@ -176,9 +200,34 @@ class _LoginPageState extends State<Login> {
                       SizedBox(
                         height: 30,
                       ),
-                      registrationText
+                      registrationText,
                     ],
-                  )))
+                  )
+                  )
+              )
+
+              )
+          ),
+          new Column(
+              children: widget.loading == true ?
+              <Widget> [
+                Expanded(
+                    flex: 1,
+                    child: Column(
+
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[Center(
+                          child: SizedBox(
+                            child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),),width: 140,height: 140,)
+                      ),SizedBox(height: 20,),Center(
+                        child: Text('Please Wait...'),
+                      )
+                      ],
+                    )
+                )
+              ]:
+              <Widget>[]
+          )
         ]));
   }
 }
