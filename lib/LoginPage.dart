@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:fitness_app_flutter/HomeScreen.dart';
+import 'package:fitness_app_flutter/TabScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
@@ -12,10 +12,11 @@ class Post {
   final int status;
   final String uid;
   final String token;
-  Post({this.status, this.uid, this.token});
+  final String message;
+  Post({this.status, this.message, this.uid, this.token});
 
   factory Post.fromJson(Map<String, dynamic> json) {
-    return Post(status: json['status'], uid: json['message']['uid'],token: json['message']['token']);
+    return Post(status: json['status'], uid: json['message']['uid'],token: json['message']['token'], message: json['message']['message']);
   }
 }
 
@@ -28,10 +29,16 @@ class Login extends StatefulWidget {
   }
 }
 
-class _LoginPageState extends State<Login> {
+class _LoginPageState extends State<Login> with TickerProviderStateMixin{
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   final _emailController = new TextEditingController();
   final _passwordController = new TextEditingController();
+  AnimationController rotationController;
+  @override
+  void initState() {
+    rotationController = AnimationController(duration: const Duration(milliseconds: 10000),vsync: this);
+    super.initState();
+  }
 
   void sendData() async {
     setState(() {
@@ -50,15 +57,16 @@ class _LoginPageState extends State<Login> {
             },
             body: data)
         .then((response) {
+          rotationController.reset();
           setState(() {
             widget.loading = false;
           });
       Post serverResponse = Post.fromJson(json.decode(response.body));
-      print(serverResponse.token);
+      print(serverResponse.message);
       if (serverResponse.status == 200) {
         setState(() {
           Navigator.push(context, new MaterialPageRoute(
-            builder: (BuildContext context) => userHomeScreen(serverResponse: serverResponse)
+            builder: (BuildContext context) => TabScreen(serverResponse: serverResponse)
           ));
         });
       } else {
@@ -66,7 +74,7 @@ class _LoginPageState extends State<Login> {
             context: context,
             child: new AlertDialog(
               title: new Text("Login"),
-              content: new Text(serverResponse.uid),
+              content: new Text(serverResponse.message),
             ));
       }
     });
@@ -74,7 +82,8 @@ class _LoginPageState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    final logo_img = new CircleAvatar(
+    final logo_img = RotationTransition(
+      child: new CircleAvatar(
       radius: 80.0,
       backgroundColor: Colors.black,
       child: Container(
@@ -85,6 +94,9 @@ class _LoginPageState extends State<Login> {
           ),
         ),
       ),
+    ),
+        turns: Tween(begin: 0.0, end: 5.0).animate(rotationController),         // 0.174533 means rotate -10 deg
+      alignment: FractionalOffset.center,
     );
 
     final email = Opacity(
@@ -138,6 +150,7 @@ class _LoginPageState extends State<Login> {
           child: MaterialButton(
             onPressed: ()
             {
+              rotationController.forward();
               sendData();
             },
             child: Text(
@@ -146,13 +159,15 @@ class _LoginPageState extends State<Login> {
             ),
           )),
     ));
-    final registrationText = MaterialButton(
+    final registrationText = Opacity(
+        opacity: widget.loading==true ? 0.2 : 1,
+      child: MaterialButton(
       onPressed: () {
         Navigator.of(context).pushNamed("/registration");
       },
       child: Text("New User? Register Here",
           style: new TextStyle(color: Colors.white)),
-    );
+    ));
 
     return new Scaffold(
         appBar: AppBar(

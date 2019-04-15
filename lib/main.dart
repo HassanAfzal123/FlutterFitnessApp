@@ -4,14 +4,14 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'dart:async';
 
 import 'LoginPage.dart';
-import 'HomeScreen.dart';
+import 'TabScreen.dart';
 import 'Registration.dart';
 
 void main() async {
   runApp(
       new MaterialApp(home: new SplashScreen(), routes: <String, WidgetBuilder>{
     "/loginPage": (BuildContext context) => new Login(),
-    "/userHome": (BuildContext context) => new userHomeScreen(),
+    "/tabScreen": (BuildContext context) => new TabScreen(),
     "/registration": (BuildContext context) => new Registration()
   }));
 }
