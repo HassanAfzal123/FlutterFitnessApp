@@ -6,19 +6,20 @@ import 'dart:convert';
 
 class Registration extends StatefulWidget {
   @override
+  bool loading = false;
   State<StatefulWidget> createState() {
     // TODO: implement createState
     return _RegistrationPageState();
   }
 }
 
-class Post {
+class serverData {
   final int status;
   final String message;
-  Post({this.status, this.message});
+  serverData({this.status, this.message});
 
-  factory Post.fromJson(Map<String, dynamic> json) {
-    return Post(status: json['status'], message: json['message']);
+  factory serverData.fromJson(Map<String, dynamic> json) {
+    return serverData(status: json['status'], message: json['message']);
   }
 }
 
@@ -28,6 +29,9 @@ class _RegistrationPageState extends State<Registration> {
   final _passwordController = new TextEditingController();
 
   void sendData() async {
+    setState(() {
+      widget.loading = true;
+    });
     String email = _emailController.text;
     String password = _passwordController.text;
     Map data = {"emailId": email, "password": password};
@@ -40,21 +44,24 @@ class _RegistrationPageState extends State<Registration> {
             },
             body: data)
         .then((response) {
-      Post serverResponse = Post.fromJson(json.decode(response.body));
+          setState(() {
+            widget.loading = false;
+          });
+      serverData serverResponse = serverData.fromJson(json.decode(response.body));
       print(serverResponse);
       if (serverResponse.status == 200) {
         setState(() {
           Navigator.of(context).pushNamed("/loginPage");
         });
       } else {
-        // Any condition
+        showDialog(
+            context: context,
+            child: new AlertDialog(
+              title: new Text("Register"),
+              content: new Text(serverResponse.message),
+            ));
       }
-      showDialog(
-          context: context,
-          child: new AlertDialog(
-            title: new Text("Register"),
-            content: new Text(serverResponse.message),
-          ));
+
     });
   }
 
@@ -73,23 +80,25 @@ class _RegistrationPageState extends State<Registration> {
       ),
     );
 
-    final email = new Theme(
-        data: new ThemeData(
-          primaryColor: Colors.blue,
-          primaryColorDark: Colors.white,
-          hintColor: Colors.white,
-        ),
-        child: TextFormField(
-          style: new TextStyle(color: Colors.white),
-          controller: _emailController,
-          keyboardType: TextInputType.emailAddress,
-          autofocus: false,
-          decoration: InputDecoration(
-              hintText: "Enter email",
-              contentPadding: EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 20.0),
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20.0))),
-        ));
+    final email = Opacity(
+        opacity: widget.loading==true ? 0.2 : 1,
+        child:new Theme(
+            data: new ThemeData(
+              primaryColor: Colors.blue,
+              primaryColorDark: Colors.white,
+              hintColor: Colors.white,
+            ),
+            child: TextFormField(
+              style: new TextStyle(color: Colors.white),
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+              autofocus: false,
+              decoration: InputDecoration(
+                  hintText: "Enter email",
+                  contentPadding: EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 20.0),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0))),
+            )));
 
     final password = new Theme(
         data: new ThemeData(
@@ -97,18 +106,22 @@ class _RegistrationPageState extends State<Registration> {
           primaryColorDark: Colors.white,
           hintColor: Colors.white,
         ),
-        child: TextFormField(
-          style: new TextStyle(color: Colors.white),
-          controller: _passwordController,
-          autofocus: false,
-          obscureText: true,
-          decoration: InputDecoration(
-              hintText: "Enter password",
-              contentPadding: EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 20.0),
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20.0))),
-        ));
-    final registerButton = Padding(
+        child: Opacity(
+            opacity: widget.loading==true ? 0.2 : 1,
+            child: TextFormField(
+              style: new TextStyle(color: Colors.white),
+              controller: _passwordController,
+              autofocus: false,
+              obscureText: true,
+              decoration: InputDecoration(
+                  hintText: "Enter password",
+                  contentPadding: EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 20.0),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0))),
+            )));
+    final registerButton = Opacity(
+        opacity: widget.loading==true ? 0.2 : 1,
+        child: Padding(
       padding: EdgeInsets.symmetric(vertical: 16),
       child: Material(
           borderRadius: BorderRadius.circular(20.0),
@@ -122,12 +135,12 @@ class _RegistrationPageState extends State<Registration> {
               style: TextStyle(color: Colors.black),
             ),
           )),
-    );
+    ));
     final loginText = MaterialButton(
       onPressed: () {
         Navigator.of(context).pushNamed("/loginPage");
       },
-      child: Text("Already Have an Account. Go back to Login.",
+      child: Text("Back to Login.",
           style: new TextStyle( color: Colors.white)),
     );
 
@@ -152,6 +165,8 @@ class _RegistrationPageState extends State<Registration> {
             ),
           ),
           new Center(
+              child: AbsorbPointer(
+                  absorbing: widget.loading,
               child: new Form(
                   key: _formKey,
                   child: ListView(
@@ -176,7 +191,27 @@ class _RegistrationPageState extends State<Registration> {
                       ),
                       loginText
                     ],
-                  )))
+                  )))),
+          new Column(
+              children: widget.loading == true ?
+              <Widget> [
+                Expanded(
+                    flex: 1,
+                    child: Column(
+
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[Center(
+                          child: SizedBox(
+                            child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),),width: 140,height: 140,)
+                      ),SizedBox(height: 20,),Center(
+                        child: Text(''),
+                      )
+                      ],
+                    )
+                )
+              ]:
+              <Widget>[]
+          )
         ]));
   }
 }

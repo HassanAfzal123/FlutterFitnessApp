@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter/services.dart' show SystemChannels;
+import 'userForm.dart';
 
 
 class Post {
@@ -13,10 +13,11 @@ class Post {
   final String uid;
   final String token;
   final String message;
-  Post({this.status, this.message, this.uid, this.token});
+  final bool info;
+  Post({this.status, this.message, this.uid, this.token,this.info});
 
   factory Post.fromJson(Map<String, dynamic> json) {
-    return Post(status: json['status'], uid: json['message']['uid'],token: json['message']['token'], message: json['message']['message']);
+    return Post(status: json['status'], uid: json['message']['uid'],token: json['message']['token'], message: json['message']['message'], info: json['message']['info']);
   }
 }
 
@@ -64,11 +65,22 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin{
       Post serverResponse = Post.fromJson(json.decode(response.body));
       print(serverResponse.message);
       if (serverResponse.status == 200) {
-        setState(() {
-          Navigator.push(context, new MaterialPageRoute(
-            builder: (BuildContext context) => TabScreen(serverResponse: serverResponse)
-          ));
-        });
+        if(serverResponse.info == true) {
+          setState(() {
+            Navigator.pushReplacement(context, new MaterialPageRoute(
+                builder: (BuildContext context) =>
+                  TabScreen(serverResponse: serverResponse)
+            ));
+          });
+        }
+        else {
+          setState(() {
+            Navigator.push(context, new MaterialPageRoute(
+                builder: (BuildContext context) =>
+                    userForm(serverResponse: serverResponse)
+            ));
+          });
+        }
       } else {
         showDialog(
             context: context,
@@ -235,7 +247,7 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin{
                           child: SizedBox(
                             child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),),width: 140,height: 140,)
                       ),SizedBox(height: 20,),Center(
-                        child: Text('Please Wait...'),
+                        child: Text(''),
                       )
                       ],
                     )
