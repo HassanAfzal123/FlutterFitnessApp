@@ -7,7 +7,6 @@ import 'dart:convert';
 import './Profile.dart';
 
 class TabScreen extends StatefulWidget {
-  @override
   final Post serverResponse;                // Includes the status,uid,accessToken
   TabScreen({Key key, @required this.serverResponse}) : super(key: key);
   State<StatefulWidget> createState() {
@@ -19,18 +18,16 @@ class TabScreen extends StatefulWidget {
 class _TabScreenState extends State<TabScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   int _currentIndex = 0;
-  final List<Widget> _children = [Profile(Colors.green),Profile(Colors.blue)];    // Currently initialized with Profile only, but first one should be home class
+  List<Widget> _children;
+
+
+// Currently initialized with Profile only, but first one should be home class
   @override
 
-
  Widget build(BuildContext context) {
+    _children=[new Text('This is Home'),Profile(serverResponse: widget.serverResponse,)];
     return new Scaffold(
         key: _scaffoldKey,
-        appBar: new AppBar(
-          leading: new IconButton(
-              icon: new Icon(Icons.list),
-              onPressed: () => _scaffoldKey.currentState.openDrawer()),
-        ),
         body: _children[_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
           onTap: onTabTapped,

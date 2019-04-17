@@ -67,7 +67,7 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin{
       if (serverResponse.status == 200) {
         if(serverResponse.info == true) {
           setState(() {
-            Navigator.pushReplacement(context, new MaterialPageRoute(
+            Navigator.push(context, new MaterialPageRoute(
                 builder: (BuildContext context) =>
                   TabScreen(serverResponse: serverResponse)
             ));
