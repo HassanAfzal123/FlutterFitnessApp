@@ -53,7 +53,6 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin{
             widget.loading = false;
           });
       Post serverResponse = Post.fromJson(json.decode(response.body));
-      print(serverResponse.message);
       if (serverResponse.status == 200) {
         if(serverResponse.info == true) {
           setState(() {

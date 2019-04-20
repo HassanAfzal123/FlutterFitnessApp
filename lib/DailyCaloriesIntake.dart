@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'Profile.dart';
+import 'Home.dart';
 import 'ServerResponse.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -53,11 +53,10 @@ class _CalorieIntakeState extends State<CalorieIntake>
     });
     String calorieIntake = _calorieIntakeController.text;
     String mealCategory = _intakeMealCategory;
-    
-    Map data = {"calorieIntake": calorieIntake, "mealCategory": mealCategory, "userID":widget.serverResponse.userId, "token":widget.serverResponse.token};
+    Map data = {"calorieIntake": calorieIntake, "mealCategory": mealCategory, "userId":widget.serverResponse.userId};
     await http
         .post(
-            "https://us-central1-firestoredemo-bd9a8.cloudfunctions.net/calorieIntake",
+            "https://us-central1-firestoredemo-bd9a8.cloudfunctions.net/setCalorieIntake",
             headers: {
               'Content-type': 'application/x-www-form-urlencoded',
               'Accept': 'application/json'
@@ -69,11 +68,12 @@ class _CalorieIntakeState extends State<CalorieIntake>
             widget.loading = false;
           });
       Post serverResponse = Post.fromJson(json.decode(response.body));
+      print(serverResponse.status);
       if (serverResponse.status == 200) {
         setState(() {
             Navigator.push(context, new MaterialPageRoute(
                 builder: (BuildContext context) =>
-                  Profile(serverResponse: widget.serverResponse)
+                  Home(serverResponse: widget.serverResponse)
             ));
           });
       } else {
@@ -81,7 +81,7 @@ class _CalorieIntakeState extends State<CalorieIntake>
             context: context,
             child: new AlertDialog(
               title: new Text("Update calorie count.."),
-              content: new Text(serverResponse.message),
+              content: new Text("Errorr"),
             ));
       }
     });
@@ -97,15 +97,6 @@ class _CalorieIntakeState extends State<CalorieIntake>
           new Container(
               margin: const EdgeInsets.all(10.0),
               padding: const EdgeInsets.all(3.0),
-              decoration: new BoxDecoration(
-                  border: new Border.all(color: Colors.black),
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black,
-                      blurRadius: 5.0,
-                    ),
-                  ]),
               child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -127,26 +118,24 @@ class _CalorieIntakeState extends State<CalorieIntake>
           primaryColorDark: Colors.white,
           hintColor: Colors.white,
         ),
-        child: Opacity(
-            opacity: widget.loading == true ? 0.2 : 1,
-            child: TextFormField(
-              style: new TextStyle(color: Colors.white),
-              controller: _calorieIntakeController,
-              autofocus: false,
-              obscureText: true,
-              decoration: InputDecoration(
-                  hintText: "Enter calorie count for selected meal.",
-                  contentPadding: EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 20.0),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0))),
-            )));
+        child: TextFormField(
+          style: new TextStyle(color: Colors.white),
+          controller: _calorieIntakeController,
+          keyboardType: TextInputType.number,
+          autofocus: false,
+          decoration: InputDecoration(
+              hintText: "Enter calories intake",
+              contentPadding: EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 20.0),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20.0))),
+        ));
     final intakeTimeCategory = Opacity(
         opacity: widget.loading == true ? 0.2 : 1,
         child: new Center(
           child: DropdownButton(
             hint: Text(
               'Meal Type',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.black),
             ), // Not necessary for Option 1
             value: _intakeMealCategory,
             onChanged: (newValue) {
@@ -209,7 +198,7 @@ class _CalorieIntakeState extends State<CalorieIntake>
         body: new Stack(children: <Widget>[
           Container(
             decoration: new BoxDecoration(
-              color: Colors.black87,
+              color: Colors.teal,
             ),
           ),
           new Center(

@@ -7,6 +7,6 @@ class Post {
   Post({this.status, this.message, this.userId, this.token,this.info});
 
   factory Post.fromJson(Map<String, dynamic> json) {
-    return Post(status: json['status'], userId: json['message']['uid'],token: json['message']['token'], message: json['message']['message'], info: json['message']['info']);
+    return Post(status: json['status'], userId: json['message']['userId'],token: json['message']['token'], message: json['message']['message'], info: json['message']['info']);
   }
 }

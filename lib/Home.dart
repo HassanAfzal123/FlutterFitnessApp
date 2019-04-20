@@ -10,21 +10,21 @@ import 'dart:convert';
 
 class TotalCalories {
   final int status;
-  final int totalCalories;
+  final int totalCalorieIntake;
   final String message;
-  TotalCalories({this.message, this.status, this.totalCalories});
+  TotalCalories({this.message, this.status, this.totalCalorieIntake});
   factory TotalCalories.fromJson(Map<String, dynamic> json) {
     return TotalCalories(
         status: json['status'],
         message: json['message'],
-        totalCalories: json['data']['totalCalories']);
+        totalCalorieIntake: json['totalCalorieIntake']);
   }
 }
 
 class Home extends StatefulWidget {
   bool loading = false;
   final Post serverResponse;
-  int totalCalories = 0;
+  int totalCalorieIntake = 0;
 
   Home({Key key, @required this.serverResponse}) : super(key: key);
 
@@ -37,47 +37,48 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with TickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  // void getData() async {
-  //   setState(() {
-  //     widget.loading = true;
-  //   });
-  //   Map data = {'userId': widget.serverResponse.userId};
-  //   await http
-  //       .post(
-  //           "https://us-central1-firestoredemo-bd9a8.cloudfunctions.net/getUserCalories",
-  //           headers: {
-  //             'Content-type': 'application/x-www-form-urlencoded',
-  //             'Accept': 'application/json'
-  //           },
-  //           body: data)
-  //       .then((response) {
-  //     TotalCalories userData =
-  //         TotalCalories.fromJson(json.decode(response.body));
-  //     if (userData.status != 200) {
-  //       setState(() {
-  //         widget.loading = false;
-  //         widget.totalCalories = userData.totalCalories;
-  //       });
-  //     }
-  //     else{
-  //       showDialog(
-  //           context: context,
-  //           child: new AlertDialog(
-  //             title: new Text("Server error"),
-  //             content: new Text(userData.message),
-  //           ));
-  //     }
-  //   }).catchError((onError) {
-  //     print(onError);
-  //   });
-  // }
+  void getData() async {
+    setState(() {
+      widget.loading = true;
+    });
+    Map data = {'userId': widget.serverResponse.userId};
+    await http
+        .post(
+            "https://us-central1-firestoredemo-bd9a8.cloudfunctions.net/getTotalCalorieIntake",
+            headers: {
+              'Content-type': 'application/x-www-form-urlencoded',
+              'Accept': 'application/json'
+            },
+            body: data)
+        .then((response) {
+      TotalCalories userData =
+          TotalCalories.fromJson(json.decode(response.body));
+          print(response);
+      if (userData.status == 200) {
+        setState(() {
+          widget.loading = false;
+          widget.totalCalorieIntake = userData.totalCalorieIntake;
+        });
+      }
+      else{
+        showDialog(
+            context: context,
+            child: new AlertDialog(
+              title: new Text("Server error"),
+              content: new Text(userData.message),
+            ));
+      }
+    }).catchError((onError) {
+      print(onError);
+    });
+  }
 
   @override
   void initState() {
-    // TODO: implement initState
-    // if (widget.totalCalories == 0) {
-    //   getData();
-    // }
+    //TODO: implement initState
+    if (widget.totalCalorieIntake == 0) {
+      getData();
+    }
   }
 
   @override
@@ -92,7 +93,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           children: <Widget>[
             ListTile(leading: Icon(Icons.local_dining), title: Text('Food')),
             Text(
-              'Total Calories: ' + widget.totalCalories.toString(),
+              'Total Calories: ' + widget.totalCalorieIntake.toString(),
               style: TextStyle(
                   fontSize: 25,
                   fontStyle: FontStyle.normal,

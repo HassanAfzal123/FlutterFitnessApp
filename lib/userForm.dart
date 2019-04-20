@@ -81,7 +81,7 @@ class _userFormState extends State<userForm> with TickerProviderStateMixin{
             context: context,
             child: new AlertDialog(
               title: new Text("Infomation Error"),
-              content: new Text(getResponse.message),
+              content: new Text("Error"),
             ));
 
       }
