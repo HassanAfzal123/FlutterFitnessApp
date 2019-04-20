@@ -3,23 +3,13 @@ import 'dart:ui';
 import 'package:fitness_app_flutter/TabScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'ServerResponse.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'userForm.dart';
 
 
-class Post {
-  final int status;
-  final String uid;
-  final String token;
-  final String message;
-  final bool info;
-  Post({this.status, this.message, this.uid, this.token,this.info});
 
-  factory Post.fromJson(Map<String, dynamic> json) {
-    return Post(status: json['status'], uid: json['message']['uid'],token: json['message']['token'], message: json['message']['message'], info: json['message']['info']);
-  }
-}
 
 class Login extends StatefulWidget {
   bool loading = false;

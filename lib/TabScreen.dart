@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:fitness_app_flutter/LoginPage.dart';
+import 'Home.dart';
+import 'package:fitness_app_flutter/ServerResponse.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
@@ -25,7 +26,9 @@ class _TabScreenState extends State<TabScreen> {
   @override
 
  Widget build(BuildContext context) {
-    _children=[new Text('This is Home'),Profile(serverResponse: widget.serverResponse,)];
+    _children=[Home(serverResponse: widget.serverResponse,),
+              Profile(serverResponse: widget.serverResponse,),
+    ];
     return new Scaffold(
         key: _scaffoldKey,
         body: _children[_currentIndex],

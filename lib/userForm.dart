@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'LoginPage.dart';
+import 'ServerResponse.dart';
 
 class storeData {
   final int status;
@@ -57,7 +57,7 @@ class _userFormState extends State<userForm> with TickerProviderStateMixin{
     String weight = _weightController.text;
     String height = _heightController.text;
     print(_gender);
-    Map data = {"name": name, "age": age, "height": height,"weight": weight,"gender": _gender,"userId": widget.serverResponse.uid};
+    Map data = {"name": name, "age": age, "height": height,"weight": weight,"gender": _gender,"userId": widget.serverResponse.userId};
     print(data);
     await http
         .post(

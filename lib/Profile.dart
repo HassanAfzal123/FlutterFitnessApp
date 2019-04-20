@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'LoginPage.dart';
+import 'ServerResponse.dart';
 import 'package:http/http.dart' as http;
 
 class Profile extends StatefulWidget {
@@ -37,7 +37,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
     setState(() {
       widget.loading=true;
     });
-    Map data = {'userId': widget.serverResponse.uid};
+    Map data = {'userId': widget.serverResponse.userId};
     await http.post(
         "https://us-central1-firestoredemo-bd9a8.cloudfunctions.net/getUserData",
         headers: {
