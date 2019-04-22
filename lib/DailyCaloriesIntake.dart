@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:fitness_app_flutter/TabScreen.dart';
+
 import 'Home.dart';
 import 'ServerResponse.dart';
 import 'package:flutter/material.dart';
@@ -73,7 +75,7 @@ class _CalorieIntakeState extends State<CalorieIntake>
         setState(() {
             Navigator.push(context, new MaterialPageRoute(
                 builder: (BuildContext context) =>
-                  Home(serverResponse: widget.serverResponse)
+                  TabScreen(serverResponse: widget.serverResponse)
             ));
           });
       } else {
@@ -231,16 +233,14 @@ class _CalorieIntakeState extends State<CalorieIntake>
                       Expanded(
                           flex: 1,
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
                               Center(
                                   child: SizedBox(
-                                child: CircularProgressIndicator(
+                                child: RefreshProgressIndicator(
                                   valueColor: new AlwaysStoppedAnimation<Color>(
                                       Colors.red),
                                 ),
-                                width: 140,
-                                height: 140,
                               )),
                               SizedBox(
                                 height: 20,

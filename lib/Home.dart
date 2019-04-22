@@ -1,10 +1,12 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'DailyCaloriesIntake.dart';
 
 import 'ServerResponse.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_pedometer/flutter_pedometer.dart';
+import 'package:pedometer/pedometer.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -21,10 +23,15 @@ class TotalCalories {
   }
 }
 
+class someClass {
+
+
+}
+
 class Home extends StatefulWidget {
   bool loading = false;
   final Post serverResponse;
-  int totalCalorieIntake = 0;
+
 
   Home({Key key, @required this.serverResponse}) : super(key: key);
 
@@ -36,7 +43,33 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with TickerProviderStateMixin {
+  int _totalCalorieIntake = 0;
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  StreamSubscription<int> _subscription;
+  FlutterPedometer pedometer;
+  int _stepCountValue = 0;
+
+  void setUpPedometer() {
+    Pedometer pedometer = new Pedometer();
+    _subscription = pedometer.stepCountStream.listen(_onData,
+        onError: _onError, onDone: _onDone,cancelOnError: true);
+  }
+  @override
+
+  void _onData(int stepCountValue) async {
+    setState(() {
+      print(stepCountValue);
+      _stepCountValue = stepCountValue;
+    });
+
+  }
+
+  void _onDone() => print("Finished pedometer tracking");
+
+  void _onError(error) => print("Flutter Pedometer Error: $error");
+
+  void _onCancel() => print('Cancelled');
+
   void getData() async {
     setState(() {
       widget.loading = true;
@@ -57,7 +90,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       if (userData.status == 200) {
         setState(() {
           widget.loading = false;
-          widget.totalCalorieIntake = userData.totalCalorieIntake;
+          _totalCalorieIntake = userData.totalCalorieIntake;
         });
       }
       else{
@@ -76,14 +109,18 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   @override
   void initState() {
     //TODO: implement initState
-    if (widget.totalCalorieIntake == 0) {
+    setUpPedometer();
+    if (_totalCalorieIntake == 0) {
       getData();
+
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final calorieIntakeCard = Center(
+      child:Padding(
+        padding: EdgeInsets.all(20),
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
@@ -93,7 +130,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           children: <Widget>[
             ListTile(leading: Icon(Icons.local_dining), title: Text('Food')),
             Text(
-              'Total Calories: ' + widget.totalCalorieIntake.toString(),
+              'Total Calories: ' + _totalCalorieIntake.toString(),
               style: TextStyle(
                   fontSize: 25,
                   fontStyle: FontStyle.normal,
@@ -125,8 +162,55 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           ],
         ),
       ),
+      ),
     );
 
+    final StepsCard = Center(
+      child:Padding(
+        padding: EdgeInsets.all(20),
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(leading: Icon(Icons.directions_walk), title: Text('Walk')),
+              Text(
+                'Steps: ' + _stepCountValue.toString(),//_totalCalorieIntake.toString(),
+                style: TextStyle(
+                    fontSize: 25,
+                    fontStyle: FontStyle.normal,
+                    fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 30,)
+            ],
+          ),
+        ),
+      ),
+    );
+
+
+    final CircularRefreshPointer =  Expanded(
+        flex: 1,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Center(
+                child: SizedBox(
+                  child: RefreshProgressIndicator(
+                    valueColor: new AlwaysStoppedAnimation<Color>(
+                        Colors.red),
+                  ),
+                )),
+            SizedBox(
+              height: 20,
+            ),
+            Center(
+              child: Text(''),
+            )
+          ],
+        ));
     return new Scaffold(
         appBar: AppBar(
           title: Center(
@@ -138,58 +222,14 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   fontWeight: FontWeight.w900),
             ),
           ),
-          backgroundColor: Colors.teal,
+          backgroundColor: Colors.black,
           elevation: 3.0,
         ),
-        body: new Stack(children: <Widget>[
-          Container(
-            decoration: new BoxDecoration(
-              color: Colors.black87,
-            ),
-          ),
-          new Center(
-              child: AbsorbPointer(
-                  absorbing: widget.loading,
-                  child: new Form(
-                      key: _formKey,
-                      child: new Container(
-                          child: ListView(
-                        padding: EdgeInsets.fromLTRB(30, 5, 30, 5),
-                        shrinkWrap: true,
-                        children: <Widget>[
-                          calorieIntakeCard,
-                          SizedBox(
-                            height: 30,
-                          ),
-                        ],
-                      ))))),
-          new Column(
+        backgroundColor: Colors.black87,
+        body:Column(
               children: widget.loading == true
-                  ? <Widget>[
-                      Expanded(
-                          flex: 1,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              Center(
-                                  child: SizedBox(
-                                child: CircularProgressIndicator(
-                                  valueColor: new AlwaysStoppedAnimation<Color>(
-                                      Colors.red),
-                                ),
-                                width: 140,
-                                height: 140,
-                              )),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              Center(
-                                child: Text(''),
-                              )
-                            ],
-                          ))
-                    ]
-                  : <Widget>[])
-        ]));
+                  ? <Widget>[CircularRefreshPointer]
+                  : <Widget>[calorieIntakeCard,StepsCard])
+        );
   }
 }

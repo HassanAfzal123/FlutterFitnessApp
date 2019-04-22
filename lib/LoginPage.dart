@@ -224,26 +224,6 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin{
 
               )
           ),
-          new Column(
-              children: widget.loading == true ?
-              <Widget> [
-                Expanded(
-                    flex: 1,
-                    child: Column(
-
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[Center(
-                          child: SizedBox(
-                            child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),),width: 140,height: 140,)
-                      ),SizedBox(height: 20,),Center(
-                        child: Text(''),
-                      )
-                      ],
-                    )
-                )
-              ]:
-              <Widget>[]
-          )
         ]));
   }
 }

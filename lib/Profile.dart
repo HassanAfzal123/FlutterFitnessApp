@@ -7,10 +7,7 @@ import 'package:http/http.dart' as http;
 class Profile extends StatefulWidget {
   bool loading = false;
   final Post serverResponse;
-  String name='';
-  String height='';
-  String weight='';
-  String age='';
+
 
   Profile({Key key, @required this.serverResponse}) : super(key: key);
 
@@ -24,14 +21,18 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> with TickerProviderStateMixin{
 
+  String _name='';
+  String _height='';
+  String _weight='';
+  String _age='';
 
   @override
   void initState() {
+    print('hitting');
     // TODO: implement initState
-    if(widget.name=='') {
-      getData();
-    }
+        getData();
   }
+
 
   void getData() async {
     setState(() {
@@ -46,13 +47,14 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
         },
         body: data)
         .then((response){
-      userProfileData userData = userProfileData.fromJson(json.decode(response.body));
       setState(() {
+      userProfileData userData = userProfileData.fromJson(json.decode(response.body));
+
         widget.loading = false;
-        widget.name = userData.name;
-        widget.age = userData.age;
-        widget.height = userData.height;
-        widget.weight = userData.weight;
+        _name = userData.name;
+        _age = userData.age;
+        _height = userData.height;
+        _weight = userData.weight;
       });
 
     })
@@ -65,7 +67,6 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-
     final showName =new Center(
         child: ListView(
           shrinkWrap: true,
@@ -84,7 +85,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                'Name: '+widget.name,
+                'Name: '+_name,
                 style: TextStyle(
                     fontSize: 15,
                     fontStyle: FontStyle.italic,
@@ -119,7 +120,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          'Age: '+widget.age,
+                          'Age: '+_age,
                           style: TextStyle(
                               fontSize: 15,
                               fontStyle: FontStyle.italic,
@@ -154,7 +155,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          'Weight(in Kgs): '+widget.weight,
+                          'Weight(in Kgs): '+_weight,
                           style: TextStyle(
                               fontSize: 15,
                               fontStyle: FontStyle.italic,
@@ -188,7 +189,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          'Height(in inches): '+widget.height,
+                          'Height(in inches): '+_height,
                           style: TextStyle(
                               fontSize: 15,
                               fontStyle: FontStyle.italic,
@@ -210,10 +211,10 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
               flex: 1,
               child: Column(
 
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[Center(
                     child: SizedBox(
-                      child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),),width: 140,height: 140,)
+                      child: RefreshProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),),)
                 ),SizedBox(height: 20,),Center(
                   child: Text(''),
                 )

@@ -33,7 +33,8 @@ class _TabScreenState extends State<TabScreen> {
         key: _scaffoldKey,
         body: _children[_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
-          onTap: onTabTapped,
+          type: BottomNavigationBarType.fixed,
+          onTap: onTabTapped ,
           currentIndex: _currentIndex, // this will be set when a new tab is tapped
           items: [
             BottomNavigationBarItem(
@@ -43,7 +44,7 @@ class _TabScreenState extends State<TabScreen> {
             ),
             BottomNavigationBarItem(
                 icon: Icon(Icons.person),
-                title: Text('Profile')
+                title: Text('Profile'),
             )
           ],
         ),
@@ -53,7 +54,7 @@ class _TabScreenState extends State<TabScreen> {
   // Functions
   void onTabTapped(int index) {
     setState(() {
-      _currentIndex = index;
+        _currentIndex = index;
     });
   }
 }
