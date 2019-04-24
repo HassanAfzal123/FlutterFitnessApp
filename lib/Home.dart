@@ -13,19 +13,16 @@ import 'dart:convert';
 class TotalCalories {
   final int status;
   final int totalCalorieIntake;
+  final int totalStepsCount;
   final String message;
-  TotalCalories({this.message, this.status, this.totalCalorieIntake});
+  TotalCalories({this.message, this.status, this.totalCalorieIntake, this.totalStepsCount});
   factory TotalCalories.fromJson(Map<String, dynamic> json) {
     return TotalCalories(
         status: json['status'],
         message: json['message'],
-        totalCalorieIntake: json['totalCalorieIntake']);
+        totalCalorieIntake: json['totalCalorieIntake'],
+        totalStepsCount: json['totalStepsCount']);
   }
-}
-
-class someClass {
-
-
 }
 
 class Home extends StatefulWidget {
@@ -44,31 +41,60 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with TickerProviderStateMixin {
   int _totalCalorieIntake = 0;
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  int oldStepsCount;
   StreamSubscription<int> _subscription;
-  FlutterPedometer pedometer;
   int _stepCountValue = 0;
+  int _tempforPedometer = 0;
+  int _tempCount = 0;
+  Pedometer pedometer = new Pedometer();
 
+
+  @override
   void setUpPedometer() {
-    Pedometer pedometer = new Pedometer();
+
     _subscription = pedometer.stepCountStream.listen(_onData,
         onError: _onError, onDone: _onDone,cancelOnError: true);
   }
-  @override
-
-  void _onData(int stepCountValue) async {
+  void _onData(int stepCountValue) {
+    _tempCount = _tempCount + 1;
+    print('old $oldStepsCount');
+    if(_tempCount == 1){
+        _tempforPedometer = stepCountValue;                         //_tempforPedometer is the first time value that is being returned by the Pedometer
+    }
     setState(() {
-      print(stepCountValue);
-      _stepCountValue = stepCountValue;
+      _stepCountValue = oldStepsCount+stepCountValue-_tempforPedometer;
+      print(_stepCountValue);                                         // Count by user.
     });
 
   }
-
-  void _onDone() => print("Finished pedometer tracking");
+  void _onDone() => print('Pedometer Finished');
 
   void _onError(error) => print("Flutter Pedometer Error: $error");
 
-  void _onCancel() => print('Cancelled');
+  void _onCancel() => _subscription.cancel();
+
+  void Pedometerreset(){          //T0 cancel the Pedometer subscription
+    _subscription.cancel();
+    _subscription = null;
+  }
+  void sendData() {
+    int stepsCount = _stepCountValue;
+    Map data = {
+      "stepsCount": stepsCount.toString(),
+      "userId": widget.serverResponse.userId
+    };
+    http
+        .post(
+        "http://localhost:5000/firestoredemo-bd9a8/us-central1/setStepsCount",
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json'
+        },
+        body: data)
+        .then((response) {
+          print('StepsCount Sent!');
+    });
+  }
 
   void getData() async {
     setState(() {
@@ -84,13 +110,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             },
             body: data)
         .then((response) {
-      TotalCalories userData =
-          TotalCalories.fromJson(json.decode(response.body));
-          print(response);
+      TotalCalories userData = TotalCalories.fromJson(json.decode(response.body));
       if (userData.status == 200) {
         setState(() {
           widget.loading = false;
           _totalCalorieIntake = userData.totalCalorieIntake;
+          oldStepsCount = userData.totalStepsCount;
         });
       }
       else{
@@ -101,6 +126,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               content: new Text(userData.message),
             ));
       }
+      setUpPedometer();
     }).catchError((onError) {
       print(onError);
     });
@@ -109,11 +135,14 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   @override
   void initState() {
     //TODO: implement initState
-    setUpPedometer();
-    if (_totalCalorieIntake == 0) {
       getData();
+  }
 
-    }
+  @override
+  void dispose(){
+    Pedometerreset();
+    sendData();
+    super.dispose();
   }
 
   @override
@@ -159,6 +188,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                         ListTile(leading: Icon(Icons.add), title: Text('Add')),
                   ),
                 ))
+            ,
           ],
         ),
       ),
