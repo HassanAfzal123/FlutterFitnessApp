@@ -73,7 +73,7 @@ class _CalorieIntakeState extends State<CalorieIntake>
       print(serverResponse.status);
       if (serverResponse.status == 200) {
         setState(() {
-            Navigator.push(context, new MaterialPageRoute(
+            Navigator.pushReplacement(context, new MaterialPageRoute(
                 builder: (BuildContext context) =>
                   TabScreen(serverResponse: widget.serverResponse)
             ));

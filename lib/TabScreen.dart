@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:fitness_app_flutter/Workouts.dart';
+
 import 'Home.dart';
 import 'package:fitness_app_flutter/ServerResponse.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +30,7 @@ class _TabScreenState extends State<TabScreen> {
  Widget build(BuildContext context) {
     _children=[Home(serverResponse: widget.serverResponse,),
               Profile(serverResponse: widget.serverResponse,),
+              Workout(serverResponse: widget.serverResponse),
     ];
     return new Scaffold(
         key: _scaffoldKey,
@@ -45,6 +48,10 @@ class _TabScreenState extends State<TabScreen> {
             BottomNavigationBarItem(
                 icon: Icon(Icons.person),
                 title: Text('Profile'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.fitness_center),
+              title: Text('Workout'),
             )
           ],
         ),

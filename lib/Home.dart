@@ -62,7 +62,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         _tempforPedometer = stepCountValue;                         //_tempforPedometer is the first time value that is being returned by the Pedometer
     }
     setState(() {
-      _stepCountValue = oldStepsCount+stepCountValue-_tempforPedometer;
+      _stepCountValue = oldStepsCount+(stepCountValue-_tempforPedometer);
       print(_stepCountValue);                                         // Count by user.
     });
 
@@ -79,13 +79,14 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   }
   void sendData() {
     int stepsCount = _stepCountValue;
+    print(stepsCount);
     Map data = {
       "stepsCount": stepsCount.toString(),
       "userId": widget.serverResponse.userId
     };
     http
         .post(
-        "http://localhost:5000/firestoredemo-bd9a8/us-central1/setStepsCount",
+        "https://us-central1-firestoredemo-bd9a8.cloudfunctions.net/setStepsCount",
         headers: {
           'Content-type': 'application/x-www-form-urlencoded',
           'Accept': 'application/json'
@@ -170,7 +171,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 height: 20.0,
                 child: MaterialButton(
                   onPressed: () {
-                    Navigator.push(context, new MaterialPageRoute(
+                    Navigator.pushReplacement(context, new MaterialPageRoute(
                         builder: (BuildContext context) =>
                     CalorieIntake(serverResponse: widget.serverResponse)
             ));
