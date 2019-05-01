@@ -9,6 +9,8 @@ import 'package:flutter_pedometer/flutter_pedometer.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:fitness_app_flutter/DaysSelection.dart';
+import 'package:tts/tts.dart';
 
 class WorkOutCategory {
   final int status;
@@ -25,7 +27,6 @@ class Workout extends StatefulWidget {
   bool loading = false;
   final Post serverResponse;
 
-
   Workout({Key key, @required this.serverResponse}) : super(key: key);
 
   @override
@@ -35,10 +36,19 @@ class Workout extends StatefulWidget {
   }
 }
 
+
+
 class _WorkoutState extends State<Workout> with TickerProviderStateMixin {
+
   List ColorsList= [Color(0xAA33691E),Color(0xFF01579B),Color(0xAABB2C00)];
   List _categories;
   var details;
+
+  speak() async {
+    Tts.speak('Hello there !! I am your helper. If you are confused about anything, just hit the information button on the top right corner.');
+  }
+
+
   void getData() async {
     setState(() {
       widget.loading = true;
@@ -86,6 +96,13 @@ class _WorkoutState extends State<Workout> with TickerProviderStateMixin {
 
     return new Scaffold(
       appBar: AppBar(
+          actions: <Widget>[
+      IconButton(
+      icon: Icon(Icons.info),
+      color: Colors.blue,
+      tooltip: 'hint',
+      onPressed: speak,
+    ),],
         title: Center(
           child: Text(
             'The Aesthetic Club',
@@ -111,7 +128,10 @@ class _WorkoutState extends State<Workout> with TickerProviderStateMixin {
               tag: _categories[index],
              child: new GestureDetector(
                   onTap: (){
-                    //Navigate to exercise page.
+                    Navigator.push(context, new MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            daysSelection(serverResponse: widget.serverResponse,exerciseCategory: _categories[index])
+                    ));
                   },
                   onDoubleTap: () {
                     setState(() {
@@ -159,8 +179,8 @@ class _WorkoutState extends State<Workout> with TickerProviderStateMixin {
           }
 
       ),
-      flex: 0,),
-    new Expanded(child: Center(child: Text('Confused? Double tap on level for details !',style: TextStyle(color: Colors.white),)),flex: 1,)
+      ),
+    Center(child: Text('Confused? Double tap on level for details !',style: TextStyle(color: Colors.white),))
     ],
       )
     );
