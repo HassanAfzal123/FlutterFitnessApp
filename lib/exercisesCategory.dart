@@ -106,7 +106,7 @@ class _exercisesCategoryState extends State<exercisesCategory> with TickerProvid
           backgroundColor: Colors.black,
           elevation: 3.0,
         ),
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.black87,
         body: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
@@ -136,19 +136,19 @@ class _exercisesCategoryState extends State<exercisesCategory> with TickerProvid
                               child:Padding(
                                 padding: EdgeInsets.all(20),
                                 child: Card(
-                                  color: Colors.brown,
+                                  color: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0),
                                   ),
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
-                                      ListTile(leading: Icon(Icons.fitness_center,size: 50,color: Colors.amber,)),
+                                      ListTile(leading: Icon(Icons.fitness_center,size: 30,color: Colors.blue,)),
                                       Text(
                                         _exercises[index],
                                         style: TextStyle(
                                             fontSize: 25,
-                                            color: Colors.white,
+                                            color: Colors.black,
                                             fontStyle: FontStyle.normal,
                                             fontWeight: FontWeight.w600),
                                       ),

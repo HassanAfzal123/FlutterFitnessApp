@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:tts/tts.dart';
+
 import 'DailyCaloriesIntake.dart';
 
 import 'ServerResponse.dart';
@@ -132,7 +134,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       print(onError);
     });
   }
-
+  speak() async {
+    Tts.speak('Hello, Welcome to The Asthetic Club. If you are confused about anything, just hit the information button on the top right corner.');
+  }
   @override
   void initState() {
     //TODO: implement initState
@@ -244,6 +248,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         ));
     return new Scaffold(
         appBar: AppBar(
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.info),
+              color: Colors.blue,
+              tooltip: 'hint',
+              onPressed: speak,
+            ),],
           title: Center(
             child: Text(
               'The Aesthetic Club',

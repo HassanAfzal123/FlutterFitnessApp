@@ -45,6 +45,10 @@ flutter:
   - assets/splashscreen.png
   - assets/logo.png
   - assets/logo2.jpeg
+  - assets/profile_height.png
+  - assets/profile_weight.png
+  - assets/profile_age.png
+  - assets/profile_bmi.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg

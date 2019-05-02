@@ -40,12 +40,12 @@ class Workout extends StatefulWidget {
 
 class _WorkoutState extends State<Workout> with TickerProviderStateMixin {
 
-  List ColorsList= [Color(0xAA33691E),Color(0xFF01579B),Color(0xAABB2C00)];
+  List ColorsList= [Colors.white,Colors.white24,Colors.white54];
   List _categories;
   var details;
 
   speak() async {
-    Tts.speak('Hello there !! I am your helper. If you are confused about anything, just hit the information button on the top right corner.');
+    Tts.speak('Select your level. If you are new to workouts, select Beginners Level. Then move to Intermediate Level and then the Advance Level');
   }
 
 
@@ -140,7 +140,7 @@ class _WorkoutState extends State<Workout> with TickerProviderStateMixin {
               showDialog(
                   context: context,
                   child: new AlertDialog(
-                    title: new Text(_categories[index]+' Level'),
+                    title: new Text(_categories[index]+' Level',style: TextStyle(color: Colors.black),),
                     content: details,
                   ));
                   },
@@ -151,19 +151,19 @@ class _WorkoutState extends State<Workout> with TickerProviderStateMixin {
             child:Padding(
             padding: EdgeInsets.all(20),
             child: Card(
-              color: Colors.transparent,
+              color: Colors.white,
             shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
             ),
             child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-            ListTile(leading: Icon(Icons.fitness_center,size: 50,color: Colors.amber,)),
+            ListTile(leading: Icon(Icons.fitness_center,size: 30,color: Colors.blue,)),
             Text(
             _categories[index]+' Level',
             style: TextStyle(
             fontSize: 25,
-            color: Colors.white,
+            color: Colors.black,
             fontStyle: FontStyle.normal,
             fontWeight: FontWeight.w600),
             ),
@@ -186,7 +186,6 @@ class _WorkoutState extends State<Workout> with TickerProviderStateMixin {
     );
   }
 }
-
 
 final CircularRefreshPointer =  Expanded(
     flex: 1,
