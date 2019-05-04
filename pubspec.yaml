@@ -49,6 +49,7 @@ flutter:
   - assets/profile_weight.png
   - assets/profile_age.png
   - assets/profile_bmi.png
+  - assets/bodygarage_logo.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg

@@ -49,10 +49,9 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
     if (colorSwitched) {
       setState(() {
         _backgroundColor = [
-          Color.fromRGBO(252, 214, 0, 1),
-          Color.fromRGBO(251, 207, 6, 1),
-          Color.fromRGBO(250, 197, 16, 1),
-          Color.fromRGBO(249, 161, 28, 1),
+          Color(0xDD000000),
+          Color(0xDD000000),
+          Color(0xDD000000),Color(0xDD000000)
         ];
         _iconColor = Colors.white;
         _textColor = Color.fromRGBO(253, 211, 4, 1);
@@ -145,7 +144,9 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
           backgroundColor: Colors.black87,
           elevation: 3.0,
         ),
-        body: GestureDetector(
+        body: widget.loading == true ? Column(children:<Widget>[CircularRefreshPointer]) :
+
+        GestureDetector(
           onLongPress: () {
             if (colorSwitched) {
               colorSwitched = false;
@@ -172,10 +173,10 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                   height: 20.0,
                 ),
                 Image.asset(
-                  'assets/logo.png',
+                  'assets/bodygarage_logo.png',
                   fit: BoxFit.contain,
-                  height: 250.0,
-                  width: 250.0,
+                  height: 200.0,
+                  width: 200.0,
                 ),
                 Container(
                   height: 300.0,
@@ -256,7 +257,8 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
             ),
           ),
         ),
-      ),
+
+    )
     );
   }
 
@@ -286,6 +288,27 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
     );
   }
 }
+
+final CircularRefreshPointer =  Expanded(
+    flex: 1,
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        Center(
+            child: SizedBox(
+              child: RefreshProgressIndicator(
+                valueColor: new AlwaysStoppedAnimation<Color>(
+                    Colors.red),
+              ),
+            )),
+        SizedBox(
+          height: 20,
+        ),
+        Center(
+          child: Text(''),
+        )
+      ],
+    ));
 
 
 class userProfileData {
