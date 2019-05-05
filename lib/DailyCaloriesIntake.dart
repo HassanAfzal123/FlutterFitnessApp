@@ -137,7 +137,7 @@ class _CalorieIntakeState extends State<CalorieIntake>
           child: DropdownButton(
             hint: Text(
               'Meal Type',
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(color: Colors.white),
             ), // Not necessary for Option 1
             value: _intakeMealCategory,
             onChanged: (newValue) {
@@ -156,7 +156,7 @@ class _CalorieIntakeState extends State<CalorieIntake>
               return DropdownMenuItem(
                 child: new Text(
                   items,
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: Colors.blueAccent),
                 ),
                 value: items,
               );
@@ -194,13 +194,13 @@ class _CalorieIntakeState extends State<CalorieIntake>
                   fontWeight: FontWeight.w900),
             ),
           ),
-          backgroundColor: Colors.white70,
+          backgroundColor: Colors.black,
           elevation: 3.0,
         ),
         body: new Stack(children: <Widget>[
           Container(
             decoration: new BoxDecoration(
-              color: Colors.teal,
+              color: Colors.black87,
             ),
           ),
           new Center(
@@ -212,7 +212,6 @@ class _CalorieIntakeState extends State<CalorieIntake>
                         padding: EdgeInsets.fromLTRB(30, 5, 30, 5),
                         shrinkWrap: true,
                         children: <Widget>[
-                          showDate,
                           SizedBox(
                             height: 30,
                           ),

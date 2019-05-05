@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:tts/tts.dart';
 import 'ServerResponse.dart';
 import 'package:http/http.dart' as http;
@@ -29,6 +30,11 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
   String _weight='';
   String _age='';
   int _BMI= 0;
+  String _userHealthStatus = '';
+  final _EditWeightController = new TextEditingController();
+  final _EditHeightController = new TextEditingController();
+  final _EditAgeController = new TextEditingController();
+  bool healthLoading = false;
 
   List<Color> _backgroundColor;
   Color _iconColor;
@@ -43,6 +49,11 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
     // TODO: implement initState
         getData();
         changeTheme();
+  }
+
+  void dispose(){
+
+    super.dispose();
   }
 
   void changeTheme() async {
@@ -120,6 +131,84 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
   }
 
 
+  void UpdateUserData()  {
+    setState(() {
+      widget.loading = true;
+    });
+    String newWeight;
+    String newHeight;
+    String newAge;
+    if(_EditWeightController.text == ''){
+      newWeight = _weight;
+    }
+    else{
+      newWeight = _EditWeightController.text;
+    }
+    if(_EditHeightController.text==''){
+      newHeight = _height;
+    }
+    else{
+      newHeight = _EditHeightController.text;
+    }
+    if(_EditAgeController == ''){
+      newAge = _age;
+    }
+    else{
+      newAge = _EditAgeController.text;
+    }
+    Map data = {"userId": widget.serverResponse.userId,"weight": newWeight, "height": newHeight, "age": newAge};
+     http
+        .post(
+        "https://us-central1-firestoredemo-bd9a8.cloudfunctions.net/UpdateUserData",
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json'
+        },
+        body: data)
+        .then((response) {
+          setState(() {
+            widget.loading = true;
+          });
+          getData();
+    });
+  }
+
+  void getUserStatus() async {
+    setState(() {
+      healthLoading = true;
+    });
+    Map data = {'userId': widget.serverResponse.userId};
+    await http.post(
+        "https://us-central1-firestoredemo-bd9a8.cloudfunctions.net/model",
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json'
+        },
+        body: data)
+        .then((response){
+      setState(() {
+        userStatusData userStatus = userStatusData.fromJson(json.decode(response.body));
+        widget.loading = false;
+        healthLoading = false;
+        _userHealthStatus = userStatus.userStatus;
+        showDialog(
+            context: context,
+            child: new AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0)),),
+              title: new Text("Health Status"),
+              content: new Text('Given your Height, Weight and Gender, our Artificial Intelligence predicted that your health status is: "'+_userHealthStatus+'"'),
+            ));
+          Tts.speak('Given your Height, Weight and Gender, our Artificial Intelligence predicted that your health status is: "'+_userHealthStatus+'"');
+
+
+      });
+
+    })
+        .catchError((onError){
+      print('Error here');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -175,8 +264,8 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                 Image.asset(
                   'assets/bodygarage_logo.png',
                   fit: BoxFit.contain,
-                  height: 200.0,
-                  width: 200.0,
+                  height: 150.0,
+                  width: 150.0,
                 ),
                 Container(
                   height: 300.0,
@@ -203,6 +292,13 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Container(
+                              alignment: Alignment.topRight,
+                              child:  healthLoading == true ? SizedBox(child: RefreshProgressIndicator( valueColor: new AlwaysStoppedAnimation<Color>(
+                                  Colors.red),),height: 40,width: 40,)
+                              :
+                              IconButton(icon: Icon(Icons.info),color: Colors.white, onPressed: getUserStatus,)
+                          ),
+                          Container(
                             height: 70,
                             child: Center(
                               child: ListView(
@@ -211,7 +307,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                     'Hello,',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        color: _textColor,
+                                        color: Colors.white,
                                         fontSize: 16),
                                   ),
                                   Text(
@@ -237,15 +333,121 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                             ),
                             children: [
                               TableRow(children: [
-                                _actionList(
-                                    'assets/profile_weight.png', 'Weight: '+_weight+'kg'),
-                                _actionList(
+                                GestureDetector(
+                                  onTap: (){
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text('Edit Weight(in Kg)'),
+                                            content: TextField(
+                                              inputFormatters: <TextInputFormatter>[
+                                                WhitelistingTextInputFormatter.digitsOnly
+                                              ],
+                                              keyboardType: TextInputType.number,
+                                              controller: _EditWeightController,
+                                              decoration: InputDecoration(hintText: _weight),
+                                            ),
+                                            actions: <Widget>[
+                                              new FlatButton(
+                                                child: new Text('Cancel'),
+                                                onPressed: () {
+                                                  _EditWeightController.text = '';
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                              new FlatButton(
+                                                child: new Text('Submit'),
+                                                onPressed: () {
+                                                  UpdateUserData();
+                                                  Navigator.of(context).pop();
+                                                },
+                                              )
+                                            ],
+                                          );
+                                        });
+                                  }
+                                ,child: _actionList(
+                                    'assets/profile_weight.png', 'Weight: '+_weight+'kg')
+                                ),
+                                GestureDetector(
+                                    onTap: (){
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: Text('Edit Height(in Inches)'),
+                                              content: TextField(
+                                                inputFormatters: <TextInputFormatter>[
+                                                  WhitelistingTextInputFormatter.digitsOnly
+                                                ],
+                                                keyboardType: TextInputType.number,
+                                                controller: _EditHeightController,
+                                                decoration: InputDecoration(hintText: _height),
+                                              ),
+                                              actions: <Widget>[
+                                                new FlatButton(
+                                                  child: new Text('Cancel'),
+                                                  onPressed: () {
+                                                    _EditHeightController.text = '';
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                                new FlatButton(
+                                                  child: new Text('Submit'),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                    UpdateUserData();
+                                                  },
+                                                )
+                                              ],
+                                            );
+                                          });
+                                    }
+                                    ,child:  _actionList(
                                     'assets/profile_height.png', 'Height: '+_height+' inches'),
+                                ),
+
                               ]),
                               TableRow(children: [
-                                _actionList('assets/profile_age.png', 'Age: '+_age),
+                                GestureDetector(
+                                    onTap: (){
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: Text('Edit Age'),
+                                              content: TextField(
+                                                inputFormatters: <TextInputFormatter>[
+                                                  WhitelistingTextInputFormatter.digitsOnly
+                                                ],
+                                                keyboardType: TextInputType.number,
+                                                controller: _EditAgeController,
+                                                decoration: InputDecoration(hintText: _age),
+                                              ),
+                                              actions: <Widget>[
+                                                new FlatButton(
+                                                  child: new Text('Cancel'),
+                                                  onPressed: () {
+                                                    _EditAgeController.text = '';
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                                new FlatButton(
+                                                  child: new Text('Submit'),
+                                                  onPressed: () {
+                                                    UpdateUserData();
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                )
+                                              ],
+                                            );
+                                          });
+                                    }
+                                    ,child:  _actionList('assets/profile_age.png', 'Age: '+_age)
+                                ),
                                 _actionList('assets/profile_bmi.png', 'BMI: '+_BMI.toString()),
-                              ])
+                              ]),
                             ],
                           ),
                         ],
@@ -323,6 +525,14 @@ class userProfileData {
   }
 }
 
+class userStatusData {
+  final String userStatus;
+  userStatusData({this.userStatus});
+
+  factory userStatusData.fromJson(Map<String, dynamic> json) {
+    return userStatusData(userStatus: json['message']);
+  }
+}
 
 
 

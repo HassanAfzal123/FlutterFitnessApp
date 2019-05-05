@@ -21,7 +21,7 @@ class TabScreen extends StatefulWidget {
 class _TabScreenState extends State<TabScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   int _currentIndex = 0;
-  List<Widget> _children;
+  List<Widget> _children=[];
 
 
 // Currently initialized with Profile only, but first one should be home class

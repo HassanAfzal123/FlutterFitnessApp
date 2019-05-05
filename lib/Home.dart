@@ -90,14 +90,14 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     _subscription.cancel();
     _subscription = null;
   }
-  void sendData() {
+  void sendData() async {
     int stepsCount = _stepCountValue;
     print(stepsCount);
     Map data = {
       "stepsCount": stepsCount.toString(),
       "userId": widget.serverResponse.userId
     };
-    http
+   await http
         .post(
         "https://us-central1-firestoredemo-bd9a8.cloudfunctions.net/setStepsCount",
         headers: {
@@ -168,6 +168,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       child:Padding(
         padding: EdgeInsets.all(20),
       child: Card(
+
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
@@ -184,7 +185,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             ),
             new ButtonTheme(
                 minWidth: 150.0,
-                height: 20.0,
+                height: 10.0,
                 child: MaterialButton(
                   onPressed: () {
                     Navigator.pushReplacement(context, new MaterialPageRoute(
@@ -284,8 +285,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         body:widget.loading == true ? new Column(children: <Widget>[CircularRefreshPointer],) :
         new Column(
             children: <Widget>[SizedBox(height: 20,),Center(child: Text('Steps',style: TextStyle(color: Colors.white,fontSize: 30,fontWeight: FontWeight.bold,fontStyle: FontStyle.italic),),),SizedBox(height: 20,),new Center(child: Container(
-        height: 200.0,
-        width: 200.0,
+        height: 170.0,
+        width: 170.0,
         child: new CustomPaint(
           foregroundPainter: new MyPainter(
               lineColor: Colors.amber,
@@ -296,6 +297,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           child: new Padding(
             padding: const EdgeInsets.all(8.0),
             child: new RaisedButton(
+              onPressed: (){},
                 color: Colors.black,
                 splashColor: Colors.blueAccent,
                 shape: new CircleBorder(),
@@ -304,9 +306,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         ),
       ),
       ),
-           ),SizedBox(height: 80,),Center(child: Text('Calories',style: TextStyle(color: Colors.white,fontSize: 30,fontWeight: FontWeight.bold,fontStyle: FontStyle.italic),),),SizedBox(height: 20,),new Center(child: Container(
-      height: 200.0,
-      width: 200.0,
+           ),SizedBox(height: 50,),Center(child: Text('Calories',style: TextStyle(color: Colors.white,fontSize: 30,fontWeight: FontWeight.bold,fontStyle: FontStyle.italic),),),SizedBox(height: 20,),new Center(child: Container(
+      height: 170.0,
+      width: 170.0,
       child: new CustomPaint(
         foregroundPainter: new MyPainter(
             lineColor: Colors.teal,
@@ -330,36 +332,38 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           ),
         ),
       ),
-    ),),]
+    ),),SizedBox(height: 75,),ListView(
+              shrinkWrap: true,
+              physics: ClampingScrollPhysics(),
+              children: <Widget>[
+                Container(
+                  color: Colors.black,
+                    height: 54,
+                    child: Center(
+                        child: new RaisedButton(
+                          color: Colors.transparent,
+                          onPressed: (){showDialog(
+                        context: context,
+                        child: new Container(
+                          height: 200,
+                              child: AlertDialog(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0)),),
+                        title: new Text('Summary'),
+                        content: new Text("Steps taken today: "+_stepCountValue.toString()+"\nCalories intake today: "+_totalCalorieIntake.toString()+"\nCalories burned today: "+(_stepCountValue*20).toString(),style: TextStyle(fontWeight: FontWeight.bold),),
+                        )));
+                        },
+                          child: Text('Summary',
+                            style: TextStyle(color: Colors.white,fontStyle: FontStyle.italic,fontWeight: FontWeight.bold,fontSize: 20),)
+                          ,)
+                    )
+
+                )
+              ]
+            )]
     )
     );
 
 
-  }
-  Widget _actionList(var icon, String desc) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Image.asset(
-            icon,
-            fit: BoxFit.contain,
-            height: 45.0,
-            width: 45.0,
-            color: Colors.black,
-          ),
-          SizedBox(
-            height: 8,
-          ),
-          Text(
-            desc,
-            style: TextStyle(color: Colors.black),
-          )
-        ],
-      ),
-    );
   }
 }
 
