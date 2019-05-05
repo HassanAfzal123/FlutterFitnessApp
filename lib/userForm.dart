@@ -30,7 +30,7 @@ class userForm extends StatefulWidget {
 }
 
 class _userFormState extends State<userForm> with TickerProviderStateMixin{
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final _formKey = new GlobalKey<FormState>();
   final _nameController = new TextEditingController();
   final _ageController = new TextEditingController();
   final _heightController = new TextEditingController();
@@ -90,6 +90,8 @@ class _userFormState extends State<userForm> with TickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
+
+
     final logo_img = new CircleAvatar(
         radius: 80.0,
         backgroundColor: Colors.black,
@@ -112,6 +114,7 @@ class _userFormState extends State<userForm> with TickerProviderStateMixin{
               hintColor: Colors.white,
             ),
             child: TextFormField(
+              validator: (value) => value.isEmpty || value == null ? 'Name cannot be blank':null,
               style: new TextStyle(color: Colors.white),
               controller: _nameController,
               keyboardType: TextInputType.text,
@@ -132,6 +135,7 @@ class _userFormState extends State<userForm> with TickerProviderStateMixin{
               hintColor: Colors.white,
             ),
             child: TextFormField(
+              validator: (value) => value.isEmpty || value == null ? 'Age cannot be blank':null,
               style: new TextStyle(color: Colors.white),
               controller: _ageController,
               keyboardType: TextInputType.number,
@@ -155,6 +159,7 @@ class _userFormState extends State<userForm> with TickerProviderStateMixin{
               hintColor: Colors.white,
             ),
             child: TextFormField(
+              validator: (value) => value.isEmpty || value == null ? 'Weight cannot be blank':null,
               style: new TextStyle(color: Colors.white),
               controller: _weightController,
               inputFormatters: <TextInputFormatter>[
@@ -178,6 +183,7 @@ class _userFormState extends State<userForm> with TickerProviderStateMixin{
               hintColor: Colors.white,
             ),
             child: TextFormField(
+              validator: (value) => value.isEmpty || value == null ? 'Height cannot be blank':null,
               style: new TextStyle(color: Colors.white),
               controller: _heightController,
               keyboardType: TextInputType.number,
@@ -231,7 +237,10 @@ class _userFormState extends State<userForm> with TickerProviderStateMixin{
               child: MaterialButton(
                 onPressed: ()
                 {
-                  sendData();
+                  if(_formKey.currentState.validate()){
+                    sendData();
+                  }
+
                 },
                 child: Text(
                   "Save Data",
@@ -303,24 +312,30 @@ class _userFormState extends State<userForm> with TickerProviderStateMixin{
           ),
           new Column(
               children: widget.loading == true ?
-              <Widget> [
-                Expanded(
-                    flex: 1,
-                    child: Column(
-
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[Center(
-                          child: SizedBox(
-                            child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),),width: 140,height: 140,)
-                      ),SizedBox(height: 20,),Center(
-                        child: Text(''),
-                      )
-                      ],
-                    )
-                )
-              ]:
+              <Widget> [CircularRefreshPointer]:
               <Widget>[]
           )
         ]));
   }
 }
+
+final CircularRefreshPointer =  Expanded(
+    flex: 1,
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        Center(
+            child: SizedBox(
+              child: RefreshProgressIndicator(
+                valueColor: new AlwaysStoppedAnimation<Color>(
+                    Colors.red),
+              ),
+            )),
+        SizedBox(
+          height: 20,
+        ),
+        Center(
+          child: Text(''),
+        )
+      ],
+    ));

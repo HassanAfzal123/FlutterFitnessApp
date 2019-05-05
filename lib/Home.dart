@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flutter/services.dart';
 import 'package:tts/tts.dart';
 
 import 'DailyCaloriesIntake.dart';
@@ -50,8 +51,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   int _tempforPedometer = 0;
   int _tempCount = 0;
   Pedometer pedometer = new Pedometer();
-  List StepCountColor = [Colors.blueAccent,Colors.orange,Colors.red,Colors.green,Colors.brown,Colors.white,Colors.black];
-  int _index;
+  List<Color> StepCountColor = [Colors.deepPurpleAccent,Colors.red,Colors.green,Colors.brown,Colors.white,Colors.black,Colors.blueAccent];
+  int _index=0;
 
 
   @override
@@ -69,7 +70,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     setState(() {
       _stepCountValue = oldStepsCount+(stepCountValue-_tempforPedometer);
       print(_stepCountValue);       // Count by user.
-      if(_stepCountValue%100 == 0){
+      if(_stepCountValue%20 == 0){
         if(_index<6){
           _index=_index+1;
         }
@@ -126,11 +127,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         .then((response) {
       TotalCalories userData = TotalCalories.fromJson(json.decode(response.body));
       if (userData.status == 200) {
+        print(StepCountColor[_index]);
         setState(() {
           widget.loading = false;
           _totalCalorieIntake = userData.totalCalorieIntake;
           oldStepsCount = userData.totalStepsCount;
-          _index = oldStepsCount~/100;
         });
       }
       else{
@@ -164,6 +165,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+
+
     final calorieIntakeCard = Center(
       child:Padding(
         padding: EdgeInsets.all(20),
@@ -260,6 +263,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           ],
         ));
 
+    setState(() {
+      if(_index>6 || _index<0){
+        _index=0;
+      }
+    });
+
     return new Scaffold(
         appBar: AppBar(
           actions: <Widget>[
@@ -285,13 +294,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         body:widget.loading == true ? new Column(children: <Widget>[CircularRefreshPointer],) :
         new Column(
             children: <Widget>[SizedBox(height: 20,),Center(child: Text('Steps',style: TextStyle(color: Colors.white,fontSize: 30,fontWeight: FontWeight.bold,fontStyle: FontStyle.italic),),),SizedBox(height: 20,),new Center(child: Container(
-        height: 170.0,
-        width: 170.0,
+        height: 180.0,
+        width: 180.0,
         child: new CustomPaint(
           foregroundPainter: new MyPainter(
               lineColor: Colors.amber,
-              completeColor: StepCountColor[_index],
-              completePercent: _stepCountValue.toDouble() - (_stepCountValue.toInt()%100),
+              completeColor:Colors.redAccent,
+              completePercent: _stepCountValue.toDouble(),
               width: 8.0
           ),
           child: new Padding(
@@ -306,13 +315,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         ),
       ),
       ),
-           ),SizedBox(height: 50,),Center(child: Text('Calories',style: TextStyle(color: Colors.white,fontSize: 30,fontWeight: FontWeight.bold,fontStyle: FontStyle.italic),),),SizedBox(height: 20,),new Center(child: Container(
-      height: 170.0,
-      width: 170.0,
+           ),SizedBox(height: 30,),Center(child: Text('Calories',style: TextStyle(color: Colors.white,fontSize: 30,fontWeight: FontWeight.bold,fontStyle: FontStyle.italic),),),SizedBox(height: 20,),new Center(child: Container(
+      height: 180.0,
+      width: 180.0,
       child: new CustomPaint(
         foregroundPainter: new MyPainter(
             lineColor: Colors.teal,
-            completeColor: Colors.red,
+            completeColor: Colors.deepOrangeAccent,
             completePercent: _totalCalorieIntake.toDouble(),
             width: 8.0
         ),
@@ -396,8 +405,11 @@ class MyPainter extends CustomPainter{
     if(completePercent < 1000) {
       arcAngle = 2 * pi * (completePercent / 1000);
     }
-    else {
+    else if(completePercent < 10000){
       arcAngle = 2 * pi * (completePercent / 10000);
+    }
+    else{
+      arcAngle = 2 * pi * (completePercent / 100000);
     }
     canvas.drawArc(
         new Rect.fromCircle(center: center,radius: radius),

@@ -150,7 +150,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
     else{
       newHeight = _EditHeightController.text;
     }
-    if(_EditAgeController == ''){
+    if(_EditAgeController.text == ''){
       newAge = _age;
     }
     else{
@@ -211,6 +211,8 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
+
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(

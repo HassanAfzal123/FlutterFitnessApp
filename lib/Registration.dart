@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -23,12 +24,19 @@ class serverData {
   }
 }
 
-class _RegistrationPageState extends State<Registration> {
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+class _RegistrationPageState extends State<Registration> with TickerProviderStateMixin {
+  final _formKey = new GlobalKey<FormState>();
   final _emailController = new TextEditingController();
   final _passwordController = new TextEditingController();
+  AnimationController rotationController;
+  @override
+  void initState() {
+    rotationController = AnimationController(duration: const Duration(milliseconds: 10000),vsync: this);
+    super.initState();
+  }
 
   void sendData() async {
+    rotationController.forward();
     setState(() {
       widget.loading = true;
     });
@@ -44,6 +52,7 @@ class _RegistrationPageState extends State<Registration> {
             },
             body: data)
         .then((response) {
+      rotationController.reset();
           setState(() {
             widget.loading = false;
           });
@@ -51,7 +60,7 @@ class _RegistrationPageState extends State<Registration> {
       print(serverResponse);
       if (serverResponse.status == 200) {
         setState(() {
-          Navigator.of(context).pushNamed("/loginPage");
+          Navigator.of(context).pushReplacementNamed("/loginPage");
         });
       } else {
         showDialog(
@@ -67,17 +76,22 @@ class _RegistrationPageState extends State<Registration> {
 
   @override
   Widget build(BuildContext context) {
-    final logo_img = new CircleAvatar(
-      radius: 80.0,
-      backgroundColor: Colors.black,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          image: new DecorationImage(
-            image: new AssetImage("assets/splashscreen.png"),
+
+    final logo_img = RotationTransition(
+      child: new CircleAvatar(
+        radius: 80.0,
+        backgroundColor: Colors.black,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            image: new DecorationImage(
+              image: new AssetImage("assets/splashscreen.png"),
+            ),
           ),
         ),
       ),
+      turns: Tween(begin: 0.0, end: 5.0).animate(rotationController),         // 0.174533 means rotate -10 deg
+      alignment: FractionalOffset.center,
     );
 
     final email = Opacity(
@@ -89,6 +103,7 @@ class _RegistrationPageState extends State<Registration> {
               hintColor: Colors.white,
             ),
             child: TextFormField(
+              validator: (value) => value.isEmpty || value == null ? 'Email cannot be blank':null,
               style: new TextStyle(color: Colors.white),
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
@@ -109,6 +124,7 @@ class _RegistrationPageState extends State<Registration> {
         child: Opacity(
             opacity: widget.loading==true ? 0.2 : 1,
             child: TextFormField(
+              validator: (value) => value.isEmpty || value == null ? 'Password cannot be blank':null,
               style: new TextStyle(color: Colors.white),
               controller: _passwordController,
               autofocus: false,
@@ -129,7 +145,11 @@ class _RegistrationPageState extends State<Registration> {
           elevation: 5.0,
           color: Colors.cyan,
           child: MaterialButton(
-            onPressed: sendData,
+            onPressed: (){
+              if(_formKey.currentState.validate()) {
+                sendData();
+              }
+            },
             child: Text(
               "Register",
               style: TextStyle(color: Colors.black),
@@ -138,7 +158,7 @@ class _RegistrationPageState extends State<Registration> {
     ));
     final loginText = MaterialButton(
       onPressed: () {
-        Navigator.of(context).pushNamed("/loginPage");
+        Navigator.of(context).pushReplacementNamed("/loginPage");
       },
       child: Text("Back to Login.",
           style: new TextStyle( color: Colors.white)),
@@ -192,26 +212,6 @@ class _RegistrationPageState extends State<Registration> {
                       loginText
                     ],
                   )))),
-          new Column(
-              children: widget.loading == true ?
-              <Widget> [
-                Expanded(
-                    flex: 1,
-                    child: Column(
-
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[Center(
-                          child: SizedBox(
-                            child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),),width: 140,height: 140,)
-                      ),SizedBox(height: 20,),Center(
-                        child: Text(''),
-                      )
-                      ],
-                    )
-                )
-              ]:
-              <Widget>[]
-          )
         ]));
   }
 }

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:fitness_app_flutter/TabScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'ServerResponse.dart';
 import 'package:http/http.dart' as http;
@@ -21,17 +22,18 @@ class Login extends StatefulWidget {
 }
 
 class _LoginPageState extends State<Login> with TickerProviderStateMixin{
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final _formKey = new GlobalKey<FormState>();
   final _emailController = new TextEditingController();
   final _passwordController = new TextEditingController();
   AnimationController rotationController;
   @override
   void initState() {
-    rotationController = AnimationController(duration: const Duration(milliseconds: 10000),vsync: this);
+    rotationController = AnimationController(duration: const Duration(milliseconds: 22000),vsync: this);
     super.initState();
   }
 
   void sendData() async {
+    rotationController.forward();
     setState(() {
       widget.loading = true;
 
@@ -83,6 +85,8 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
+
+
     final logo_img = RotationTransition(
       child: new CircleAvatar(
       radius: 80.0,
@@ -96,7 +100,7 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin{
         ),
       ),
     ),
-        turns: Tween(begin: 0.0, end: 5.0).animate(rotationController),         // 0.174533 means rotate -10 deg
+        turns: Tween(begin: 0.0, end: 10.0).animate(rotationController),         // 0.174533 means rotate -10 deg
       alignment: FractionalOffset.center,
     );
 
@@ -109,6 +113,7 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin{
           hintColor: Colors.white,
         ),
         child: TextFormField(
+          validator: (value) => value.isEmpty || value == null ? 'Email cannot be blank':null,
           style: new TextStyle(color: Colors.white),
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
@@ -129,6 +134,7 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin{
         child: Opacity(
             opacity: widget.loading==true ? 0.2 : 1,
             child: TextFormField(
+              validator: (value) => value.isEmpty || value == null ? 'Password cannot be blank':null,
           style: new TextStyle(color: Colors.white),
           controller: _passwordController,
           autofocus: false,
@@ -147,16 +153,20 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin{
           borderRadius: BorderRadius.circular(20.0),
           shadowColor: Colors.black87,
           elevation: 5.0,
-          color: Colors.cyan,
+          color: Color.fromRGBO(57, 75, 110, 0.5),
           child: MaterialButton(
+            splashColor: Color.fromRGBO(57, 75, 110, 0.5),
             onPressed: ()
             {
-              rotationController.forward();
-              sendData();
+                final form = _formKey.currentState;
+                if(form.validate())
+                {
+                  sendData();
+                }
             },
             child: Text(
               "Login",
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(color: Colors.white),
             ),
           )),
     ));
@@ -164,7 +174,7 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin{
         opacity: widget.loading==true ? 0.2 : 1,
       child: MaterialButton(
       onPressed: () {
-        Navigator.of(context).pushNamed("/registration");
+        Navigator.of(context).pushReplacementNamed("/registration");
       },
       child: Text("New User? Register Here",
           style: new TextStyle(color: Colors.white)),

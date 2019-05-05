@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:fitness_app_flutter/TabScreen.dart';
+import 'package:flutter/services.dart';
 
 import 'Home.dart';
 import 'ServerResponse.dart';
@@ -91,6 +92,8 @@ class _CalorieIntakeState extends State<CalorieIntake>
 
   @override
   Widget build(BuildContext context) {
+
+
     final showDate = new Center(
         child: ListView(
             shrinkWrap: true,
@@ -120,6 +123,8 @@ class _CalorieIntakeState extends State<CalorieIntake>
           primaryColorDark: Colors.white,
           hintColor: Colors.white,
         ),
+        child:Opacity(
+          opacity: widget.loading==true ? 0.2 : 1,
         child: TextFormField(
           style: new TextStyle(color: Colors.white),
           controller: _calorieIntakeController,
@@ -130,7 +135,7 @@ class _CalorieIntakeState extends State<CalorieIntake>
               contentPadding: EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 20.0),
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20.0))),
-        ));
+        ),),);
     final intakeTimeCategory = Opacity(
         opacity: widget.loading == true ? 0.2 : 1,
         child: new Center(
