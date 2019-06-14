@@ -358,7 +358,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                               child: AlertDialog(
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0)),),
                         title: new Text('Summary'),
-                        content: new Text("Steps taken today: "+_stepCountValue.toString()+"\nCalories intake today: "+_totalCalorieIntake.toString()+"\nCalories burned today: "+(_stepCountValue*20).toString(),style: TextStyle(fontWeight: FontWeight.bold),),
+                        content: new Text("Steps taken today: "+_stepCountValue.toString()+"\nCalories intake today: "+_totalCalorieIntake.toString()+"\nCalories burned today: "+(_stepCountValue/20).toString(),style: TextStyle(fontWeight: FontWeight.bold),),
                         )));
                         },
                           child: Text('Summary',
